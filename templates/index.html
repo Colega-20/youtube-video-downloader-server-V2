@@ -1,0 +1,233 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" />
+    <title>Hakari web server</title>
+    <!-- Custom Styles -->
+    <link
+      rel="icon"
+      href="https://cdn-icons-png.flaticon.com/512/12044/12044575.png"
+      type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}" />
+    <!-- Agregar el contenedor del loader -->
+    <div class="loader-container" id="loaderContainer">
+      <div class="loader">
+        <div class="loader-text"></div>
+      </div>
+      <br />
+      <div>
+        <p>Cargando...</p>
+      </div>
+    </div>
+    <!-- end -->
+  </head>
+  <body id="body">
+    <div class="container">
+      <h1>Descargar Videos de YouTube</h1>
+      <!-- hr into -->
+      <div class="hr">
+        <hr />
+        <h2 class="span_text">Zona de Busqueda</h2>
+        <hr />
+      </div>
+      <!-- hr  end-->
+      <!-- secion de busqueda -->
+      <section>
+        <div class="search-container">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Buscar videos en YouTube..." />
+          <borrar class="clean" onclick="cleanText()"></borrar>
+          <button id="Buscar" onclick="searchVideos()">Buscar</button>
+        </div>
+      </section>
+      <!-- end -->
+      <!-- hr into -->
+      <div class="hr">
+        <hr />
+        <h2 class="span_text">Zona de Descarga</h2>
+        <hr />
+      </div>
+      <!-- hr  end-->
+      <!-- form -->
+      <form action="/download_video" method="POST" id="downloadForm">
+        <section>
+          <input
+            type="text"
+            id="video_url"
+            name="video_url"
+            required
+            placeholder="Pega aquí el enlace del video..." />
+          <borrar class="clean" onclick="cleanText2()"></borrar>
+          <button id="descarga" type="submit">Descargar</button>
+        </section>
+        <!-- hr into -->
+        <div class="hr">
+          <hr />
+          <h2 class="span_text">Config</h2>
+          <hr />
+        </div>
+        <!-- hr  end-->
+        <section>
+          <select name="quality" class="quality-selector" id="quality">
+            <option value="6">La Mejor (4K-vp9)</option>
+            <option value="5">Ultra Full HD (1440p-vp9)</option>
+            <option value="4">Full HD (1080p)</option>
+            <option value="3" selected>HD (720p)</option>
+            <option value="2">SD (480p)</option>
+            <option value="1">(360p)</option>
+            <option value="0">Solo Audio</option>
+          </select>
+          <!-- checkbox -->
+          <div id="x2">
+            <button id="type" onclick="swit()" type="button">
+              <div class="switch-container">
+                <label class="switch">
+                  <input type="checkbox" id="modeSwitch" />
+                  <span class="slider"></span>
+                </label>
+                <span id="switchLabel">Formato: Video</span>
+              </div>
+            </button>
+          </div>
+        </section>
+      </form>
+      <!-- end -->
+
+      <!-- hr into -->
+      <div class="hr" id="zona_de_resultados" style="display: none">
+        <hr />
+        <h2 class="span_text">Zona de Resultados</h2>
+        <hr />
+      </div>
+      <!-- hr  end-->
+
+      <section id="result"></section>
+      <div id="searchResults" class="debug-grid"></div>
+
+      <footer class="marcas1">
+        <div id="©">By ESC CREATIVE ©2024-2025. All rights reserved.</div>
+      </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <!-- formurario -->
+    <script>
+      const form = document.getElementById("downloadForm");
+      const loaderContainer = document.getElementById("loaderContainer");
+      let filename = "Archivo.mp4"; // Nombre predeterminado
+      //formurario
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        loaderContainer.style.display = "flex";
+        const formData = new FormData(form);
+        document.getElementById("body").style.overflow = "hidden"; // Deshabilitar el scroll de la página principal
+
+        try {
+          const response = await fetch(form.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+              Accept: "application/json", // Pedimos JSON para enlaces reutilizables
+            },
+          });
+
+          const contentDisposition = response.headers.get(
+            "Content-Disposition"
+          );
+
+          if (
+            contentDisposition &&
+            contentDisposition.indexOf("attachment") !== -1
+          ) {
+            const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(
+              contentDisposition
+            );
+            if (matches != null && matches[1]) {
+              filename = matches[1].replace(/['"#\u{1F300}-\u{1FAD6}]/gu, ""); // Limpiar
+            }
+          }
+
+          if (
+            response.headers.get("content-type")?.includes("application/json")
+          ) {
+            // Modo JSON: recibimos un enlace reutilizable
+            const data = await response.json();
+            if (!response.ok || !data.downloadUrl) {
+              throw new Error(
+                "No se ha podido recibir el enlace. intenta selecionar una calidad menor"
+              );
+            } else if (response.ok) {
+              ping();
+            }
+
+            const downloadLink = document.createElement("a");
+            downloadLink.href = data.downloadUrl;
+            downloadLink.download = filename || "video.mp4"; // Si el backend no lo envió, usa uno por defecto
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            // console.log("Descarga iniciada con enlace reutilizable.");
+          } else {
+            // Modo binario: descargamos directamente el archivo
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename; // Usar el nombre obtenido o "video.mp4"
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }
+        } catch (error) {
+          alert(error.message);
+        } finally {
+          loaderContainer.style.display = "none";
+          document.getElementById("body").style.overflow = "auto";
+          // console.log("Descarga terminada.");
+        }
+      });
+      //pin
+      function ping() {
+        document.getElementById("video_url").value = "";
+        // Enviar ping al servidor
+        fetch("/ping")
+          .then((response) => {
+            if (!response.ok) {
+              console.error("El ping falló");
+            } else {
+              console.log("Ping enviado con éxito");
+            }
+          })
+          .catch((error) => {
+            console.error("Error al hacer ping:", error);
+          });
+      }
+    </script>
+    <!-- notas -->
+    <script>
+      //notas
+      const notas = {
+        version: "Web: v2.1",
+        versionB: "Version del Backend: v2.0.0",
+        build: "Build: 10-12-2025",
+        fecha: "Creacion: 11-11-2025",
+        by: "By: Colega/Edisson/ESC CREATIVE",
+      };
+
+      console.log(notas["version"]);
+      console.log(notas["versionB"]);
+      console.log(notas["build"]);
+      console.log(notas["fecha"]);
+      console.log(notas["by"]);
+    </script>
+  </body>
+</html>

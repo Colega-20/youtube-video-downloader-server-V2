@@ -1,0 +1,29 @@
+0. video tutorial ()
+1. descargar yt-dlp + FFmpeg (https://youtu.be/0zN9oZ98ZgE?si=t2VVEhoE2zeWGOhA), (https://youtu.be/u9CWviZVWy8?si=2wYCB-Yf7DZY81on)
+2. abrir requirements.bat en win o requirements(linux).sh en linux
+3. descargar cookie-editor para navegador (https://cookie-editor.com/). ve a youtube, inicia con tu cuenta, copia y pegas las cookies en "cookies.json"
+4. conseguir api key de youtube aca y colocar en (\static\js\script.js) en la constante api_key:
+(https://console.cloud.google.com/marketplace/product/google/youtube.googleapis.com?q=search&referrer=search&authuser=1)
+ y (https://console.cloud.google.com/apis/credentials?authuser=1&hl=es-419)
+5. usar la terminal y abrir waitress_server(windows) o gunicorn_server(linux), para desplegar el servidor
+6. paso extra y opcional: 
+descomenta las ultimas lineas de codigo de app.py y luego abre app.py directamente desde la consola,
+para usar y realizar pruebas locales en modo desarrollador. (no necesitas hacer el paso 5 para hacer esto)
+
+
+nota: 
+1- el programa puede fallar si no se coloca bien las cookies, si esto pasa como ultima opcion se eliminan, solo sirve para no ser dectetado
+como un bot en algunos casos.
+recomiendo esto, poner varias cookies de varios sitios diferentes, aparte de youtube o sin este ultimo.
+
+funciana bien siempre y cuando se respete las cookies.....
+
+2- si intentas descargar una calidad que supera el video original el servidor descargara el video en una calidad aproximada. 
+por ejemplo si el video que quieres esta en 1080p y lo intetas descargar en 4k, el servidor lo descarga en 1080p o inferior.
+
+3- el servidor borrar los archivo automaticamente despues de un tiempo establecido, 
+pero si lo cierras y lo regresas a ejecutar antes de su tiempo para limpiar la carpeta de descargas, este no borrara el archivo
+y lo tendras que hacer tu manualmente.
+
+4-si intentas descargar el mismo archivo varias veces seguidas en poco tiempo. el servidor solo descargara el primero y no descargara el 2do,
+porque lo decteta como un duplicado que no vale la pena volver a descargar. (te dara el mismo archivo).
