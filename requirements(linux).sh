@@ -1,6 +1,6 @@
 #!/bin/bash
 # Título (solo para mostrar en terminal)
-echo "=== Descargar videos de YouTube ==="
+echo "=== requirements(Linux) ==="
 
 # Actualizar pip
 python3 -m pip install --upgrade pip
@@ -16,4 +16,5 @@ pip install --upgrade yt-dlp
 python3 --version
 
 # Esperar entrada del usuario antes de cerrar
+echo "Proceso finalizado"
 # read -p "Presiona Enter para salir..."

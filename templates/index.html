@@ -15,7 +15,7 @@
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}" />
-    <!-- Agregar el contenedor del loader -->
+    <!--  contenedor del loader -->
     <div class="loader-container" id="loaderContainer">
       <div class="loader">
         <div class="loader-text"></div>
@@ -29,7 +29,7 @@
   </head>
   <body id="body">
     <div class="container">
-      <h1>Descargar Videos de YouTube</h1>
+      <h1>Downloader Local Server V2</h1>
       <!-- hr into -->
       <div class="hr">
         <hr />
@@ -82,7 +82,7 @@
             <option value="4">Full HD (1080p)</option>
             <option value="3" selected>HD (720p)</option>
             <option value="2">SD (480p)</option>
-            <option value="1">(360p)</option>
+            <option value="1">SD (360p)</option>
             <option value="0">Solo Audio</option>
           </select>
           <!-- checkbox -->
@@ -135,7 +135,7 @@
             method: "POST",
             body: formData,
             headers: {
-              Accept: "application/json", // Pedimos JSON para enlaces reutilizables
+              Accept: "application/json", // Pedir JSON para enlaces reutilizables
             },
           });
 
@@ -170,7 +170,7 @@
 
             const downloadLink = document.createElement("a");
             downloadLink.href = data.downloadUrl;
-            downloadLink.download = filename || "video.mp4"; // Si el backend no lo envió, usa uno por defecto
+            downloadLink.download = filename || "video.mp4"; // Si el backend no envia el nombre, usa este por defecto
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);

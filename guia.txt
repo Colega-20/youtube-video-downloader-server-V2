@@ -1,4 +1,4 @@
-0. video tutorial ()
+0. video tutorial (https://youtu.be/iZJMc3-glpY)
 1. descargar yt-dlp + FFmpeg (https://youtu.be/0zN9oZ98ZgE?si=t2VVEhoE2zeWGOhA), (https://youtu.be/u9CWviZVWy8?si=2wYCB-Yf7DZY81on)
 2. abrir requirements.bat en win o requirements(linux).sh en linux
 3. descargar cookie-editor para navegador (https://cookie-editor.com/). ve a youtube, inicia con tu cuenta, copia y pegas las cookies en "cookies.json"
